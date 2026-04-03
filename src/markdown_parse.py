@@ -137,7 +137,7 @@ def headingNode(block):
     blockText = block
     while blockText.startswith("#") and count <= 6:
         count += 1
-        blockText = blockText[1:]
+        blockText = blockText[1:].strip()
     return ParentNode(f"h{count}", textToChildren(blockText))
 
 def codeNode(block):
@@ -197,3 +197,20 @@ def markdownto_html(markdown):
         blockType = blockToBlockType(block)
         convertedBlocks.append(blockToNode(block, blockType))
     return ParentNode("div", convertedBlocks)
+
+def extractTitle(markdown):
+    blocks = markdownToBlocks(markdown)
+    for block in blocks:
+        if re.match(rf"^{re.escape('#')}(?![{re.escape('#')}])", block):
+            return block.replace("#", "").strip()
+    raise Exception("no header found")
+        
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    with open(from_path) as srcFile, open(template_path) as templateFile, open(dest_path, "w") as destinationFile:
+        src = srcFile.read()
+        template = templateFile.read()
+        content = markdownto_html(src).to_html()
+        title = extractTitle(src)
+        finalHTML = template.replace("{{ Title }}", title).replace("{{ Content }}", content)
+        destinationFile.write(finalHTML)
