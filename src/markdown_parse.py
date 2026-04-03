@@ -206,7 +206,7 @@ def extractTitle(markdown):
             return block.replace("#", "").strip()
     raise Exception("no header found")
         
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basePath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(from_path) as srcFile, open(template_path) as templateFile, open(dest_path, "w") as destinationFile:
@@ -214,5 +214,5 @@ def generate_page(from_path, template_path, dest_path):
         template = templateFile.read()
         content = markdownto_html(src).to_html()
         title = extractTitle(src)
-        finalHTML = template.replace("{{ Title }}", title).replace("{{ Content }}", content)
+        finalHTML = template.replace("{{ Title }}", title).replace("{{ Content }}", content).replace('href="/', f'href="{basePath}').replace('src="/', f'src="{basePath}')
         destinationFile.write(finalHTML)
