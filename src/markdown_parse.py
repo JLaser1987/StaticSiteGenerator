@@ -1,4 +1,4 @@
-import re
+import re, os
 from enum import Enum
 from textnode import TextNode, TextType
 from parentnode import ParentNode
@@ -50,6 +50,7 @@ def split_nodes_image(old_nodes):
             flagged = False
             for fragment in textFragments:
                 if fragment == "":
+                    flagged = not flagged
                     continue
                 if not flagged or currentImage >= len(images):
                     newNodes.append(TextNode(fragment, node.textType, node.url))
@@ -207,6 +208,7 @@ def extractTitle(markdown):
         
 def generate_page(from_path, template_path, dest_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(from_path) as srcFile, open(template_path) as templateFile, open(dest_path, "w") as destinationFile:
         src = srcFile.read()
         template = templateFile.read()
