@@ -5,7 +5,7 @@ from markdown_parse import generate_page
 def main():
     node = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
     print(node)
-    # cleanCopy()
+    cleanCopy()
 
     basePath = sys.argv[1] if len(sys.argv) > 1 else  "/"
     generatePages("content", "template.html", "docs", basePath)
@@ -22,7 +22,7 @@ def generatePages(dir_path_content, template_path, dest_dir_path, basePath):
             generatePages(contentPath, template_path, destPath, basePath)
 
 def cleanCopy():
-    shutil.rmtree("./public")
-    shutil.copytree("./static", "./public")
+    shutil.rmtree("./docs")
+    shutil.copytree("./static", "./docs")
 
 main()
