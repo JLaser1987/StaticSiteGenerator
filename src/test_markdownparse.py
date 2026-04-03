@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from markdown_parse import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, splitText, markdownToBlocks, blockToBlockType, BlockType
+from markdown_parse import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, splitText, markdownToBlocks, blockToBlockType, BlockType, markdownto_html
 
 
 class TestMarkdownParse(unittest.TestCase):
@@ -191,6 +191,103 @@ multiple lines
                 BlockType.CODE,
                 BlockType.QUOTE,
             ],
+        )
+
+    def test_paragraphs(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with _italic_ text and `code` here
+
+"""
+
+        node = markdownto_html(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
+
+    def test_codeblock(self):
+        md = """
+```
+This is text that _should_ remain
+the **same** even with inline stuff
+```
+"""
+
+        node = markdownto_html(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+        )
+
+    def test_quoteblock(self):
+        md = """
+>this is
+>a quote
+>block
+"""
+
+        node = markdownto_html(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>this is\na quote\nblock</blockquote></div>",
+        )
+
+    def test_unorderedListBlock(self):
+        md = """
+- This is a list
+- with items
+"""
+
+        node = markdownto_html(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>This is a list</li><li>with items</li></ul></div>",
+        )
+
+    def test_orderedListBlock(self):
+        md = """
+1. this is an
+2. ordered
+3. list
+"""
+
+        node = markdownto_html(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ol><li>this is an</li><li>ordered</li><li>list</li></ol></div>",
+        )
+
+    def test_header1Block(self):
+        md = """
+#This is an h1 header
+"""
+
+        node = markdownto_html(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h1>This is an h1 header</h1></div>",
+        )
+
+    def test_header6Block(self):
+        md = """
+######This is an h6 header
+"""
+
+        node = markdownto_html(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h6>This is an h6 header</h6></div>",
         )
 
 

@@ -53,38 +53,38 @@ class TestTextNode(unittest.TestCase):
 
     def test_plainText(self):
         node = TextNode("This is a text node", TextType.TEXT)
-        html_node = node.toHtmlNode()
+        html_node = node.to_html()
         self.assertEqual(html_node.tag, None)
         self.assertEqual(html_node.value, "This is a plain text node")
 
     def test_boldText(self):
         node = TextNode("This is a bold text node", TextType.BOLD)
-        html_node = node.toHtmlNode()
+        html_node = node.to_html()
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "This is a bold text node")
 
     def test_italicText(self):
         node = TextNode("This is an italic text node", TextType.ITALIC)
-        html_node = node.toHtmlNode()
+        html_node = node.to_html()
         self.assertEqual(html_node.tag, "i")
         self.assertEqual(html_node.value, "This is an italic text node")
 
     def test_codeText(self):
         node = TextNode("This is a code text node", TextType.CODE)
-        html_node = node.toHtmlNode()
+        html_node = node.to_html()
         self.assertEqual(html_node.tag, "code")
         self.assertEqual(html_node.value, "This is a code text node")
 
     def test_linkText(self):
         node = TextNode("This is a link text node", TextType.LINK, "https://www.google.com")
-        html_node = node.toHtmlNode()
+        html_node = node.to_html()
         self.assertEqual(html_node.tag, "a")
         self.assertEqual(html_node.props, {"href": "https://www.google.com"})
         self.assertEqual(html_node.value, 'This is a link text node')
 
     def test_plainText(self):
         node = TextNode("This is an image text node", TextType.IMAGE, "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png")
-        html_node = node.toHtmlNode()
+        html_node = node.to_html()
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.value, "")
         self.assertEqual(html_node.props, {"src": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", "alt": "This is an image text node"})

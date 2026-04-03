@@ -1,6 +1,7 @@
 import re
 from enum import Enum
 from textnode import TextNode, TextType
+from parentnode import ParentNode
 
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
@@ -120,3 +121,79 @@ def blockToBlockType(block):
         else:
             return BlockType.PARAGRAPH
     return type
+
+def textToChildren(text):
+    nodes = splitText(text)
+    htmlNodes = []
+    for node in nodes:
+        htmlNodes.append(node.to_html())
+    return htmlNodes
+
+def paragraphNode(block):
+    return ParentNode("p", textToChildren(block.replace("\n", " ")))
+
+def headingNode(block):
+    count = 0
+    blockText = block
+    while blockText.startswith("#") and count <= 6:
+        count += 1
+        blockText = blockText[1:]
+    return ParentNode(f"h{count}", textToChildren(blockText))
+
+def codeNode(block):
+    blockText = block.replace("```", "").strip()
+    node = TextNode(f"{blockText}\n", TextType.CODE)
+    return ParentNode("pre", [node.to_html()])
+
+def quoteBlock(block):
+    lines = block.split("\n")
+    processedLines = []
+    for line in lines:
+        processedLines.append(line.replace(">", "").strip())
+    processedBlock = "\n".join(processedLines)
+    return ParentNode("blockquote", textToChildren(processedBlock))
+
+def linesToList(lines):
+    listNodes = []
+    for line in lines:
+        listNodes.append(ParentNode("li", textToChildren(line)))
+    return listNodes
+
+def unorderedListBlock(block):
+    lines = block.split("\n")
+    processedLines = []
+    for line in lines:
+        processedLines.append(line.replace("-", "").strip())
+    listNodes = linesToList(processedLines)
+    return ParentNode("ul", listNodes)
+
+def orderedListBlock(block):
+    lines = block.split("\n")
+    processedLines = []
+    for line in lines:
+        processedLines.append(line[2:].strip())
+    listNodes = linesToList(processedLines)
+    return ParentNode("ol", listNodes)
+
+def blockToNode(block, blockType):
+    match blockType:
+        case BlockType.PARAGRAPH:
+            return paragraphNode(block)
+        case BlockType.HEADING:
+            return headingNode(block)
+        case BlockType.CODE:
+            return codeNode(block)
+        case BlockType.QUOTE:
+            return quoteBlock(block)
+        case BlockType.UNORDERED_LIST:
+            return unorderedListBlock(block)
+        case BlockType.ORDERED_LIST:
+            return orderedListBlock(block)
+
+def markdownto_html(markdown):
+    blocks = markdownToBlocks(markdown)
+    convertedBlocks = []
+    for block in blocks:
+        blockType = blockToBlockType(block)
+        convertedBlocks.append(blockToNode(block, blockType))
+    return ParentNode("div", convertedBlocks)
