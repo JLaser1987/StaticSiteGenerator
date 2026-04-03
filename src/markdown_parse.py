@@ -75,6 +75,7 @@ def split_nodes_link(old_nodes):
             flagged = False
             for fragment in textFragments:
                 if fragment == "":
+                    flagged = not flagged
                     continue
                 if not flagged or currentLink >= len(links):
                     newNodes.append(TextNode(fragment, node.textType, node.url))
